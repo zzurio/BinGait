@@ -1,0 +1,79 @@
+buildscript {
+    ext.kotlin_version = '1.4.0'
+	ext.tornadofx_version = "1.7.20"
+    repositories {
+        mavenCentral()
+	    jcenter()
+	    google()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+	    classpath 'com.guardsquare:proguard-gradle:7.0.0'
+	    classpath 'com.github.jengelman.gradle.plugins:shadow:6.1.0'
+    }
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'application'
+
+def guiClass = 'dev.binclub.bingait.gui.swing.SwingGui'
+def parserClass = 'dev.binclub.bingait.parser.BingaitParser'
+mainClassName = guiClass
+
+defaultTasks 'run'
+
+repositories {
+    mavenCentral()
+	maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+	implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+	
+	implementation 'com.github.bytechef:BinCode:master-SNAPSHOT'
+	
+	implementation("com.github.weisj:darklaf-core:2.5.5")
+	compile("com.github.weisj:darklaf-core:2.5.5")
+}
+
+jar {
+    manifest { attributes 'Main-Class': mainClassName }
+}
+
+shadowJar {
+	archiveClassifier.set('shadow')
+}
+
+task apiJar(type: Jar, dependsOn: shadowJar) {
+	from (zipTree(jar.archiveFile.get().asFile)) {
+		include "dev/binclub/bingait/api/**"
+		include "META-INF/bingait.kotlin_module"
+	}
+	archiveClassifier.set('api')
+}
+
+task proguard(type: proguard.gradle.ProGuardTask) {
+	configuration 'proguard/proguard.txt'
+	
+	injars 'build/libs/bingait-shadow.jar'
+	outjars 'build/libs/bingait-min.jar'
+}
+
+task runJar(type: JavaExec) {
+    main = "-jar";
+    args jar.archivePath
+}
+runJar.dependsOn(build)
+build.finalizedBy (apiJar)
+
+compileKotlin {
+	kotlinOptions.jvmTarget= 1.8
+}
+
+sourceSets {
+	main.java.srcDirs = ['src/main/kotlin']
+	main.kotlin.srcDirs = ['src/main/kotlin']
+	main.resources.srcDirs = ['src/main/resources']
+}
