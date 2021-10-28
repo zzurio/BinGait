@@ -12,4 +12,4 @@ You can find a zip file containing all the integrations and plugins for BinGait 
 
 ## Building
 
-Run `gradlew build` in the BinGait repository. Once the command has completed, your built jar will be located at`builds/libs`.
+Run `gradlew build` in the BinGait repository. Once the command has completed, your built jar will be located at `builds/libs`.
