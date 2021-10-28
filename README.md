@@ -1,5 +1,5 @@
 # BinGait
-Tool to diassemble java class files created by [x4e](https://github.com/x4e/).
+Tool to disassemble java class files created by [x4e](https://github.com/x4e/).
 
 ## Usage
 To run BinGait, run `java -jar target/bingait-shadow.jar` and BinGait will launch.
